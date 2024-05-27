@@ -14,8 +14,8 @@ router.post('/createteam/:id', async (req, res) => {
             res.json("exist")
         }
         else {
-            await ContestantModel.create({ mid:id, teamName, teamAbbreviation, password, amount:amountFind.amount, points:0 })
-                .then(res.json("create"));
+            const cr = await ContestantModel.create({ mid:id, teamName, teamAbbreviation, password, amount:amountFind.amount, points:0 })
+            res.json(cr._id);
         }
     }
     catch (err) {
