@@ -5,6 +5,7 @@ const ContestModel = require('../models/contestant');
 const AuctionModel = require('../models/auction');
 const SoldModel = require('../models/soldplayer');
 const UnsoldModel = require('../models/unsoldplayer');
+const MessageModels = require('../models/message');
 
 router.post('/createmanager', async (req, res) => {
     try {
@@ -83,6 +84,7 @@ router.post('/deletmanager/:id', async (req, res) => {
         await UnsoldModel.deleteMany({ mid: id });
         await ContestModel.deleteMany({ mid: id });
         await AuctionModel.deleteMany({ mid: id });
+        await MessageModels.deleteMany({ mid: id });
         res.json("done");
     } catch (err) {
         console.log(err);

@@ -10,6 +10,7 @@ const Player = require("./routes/players");
 const Auction = require("./routes/auction");
 const AuctionModal = require("./models/auction");
 const ContestantModal = require("./models/contestant");
+const MessageModal = require("./models/message");
 
 const app = express();
 app.use(cors());
@@ -85,6 +86,43 @@ io.on('connection', (socket) => {
             console.error('Error updating auction:', error);
         }
     });
+
+    socket.on('joinMessageRoom', async (mid) => {
+        socket.join(`message_${mid}`);
+        try {
+            const messageDetails = await MessageModal.find({ mid });
+            if (messageDetails) {
+                io.to(`message_${mid}`).emit('messagedetails', messageDetails);
+            } else {
+                console.log('message not found for mid:', mid);
+            }
+        } catch (error) {
+            console.error('Error fetching message details:', error);
+        }
+    });
+    
+    socket.on('newMessage', async (messageData) => {
+        const { mid, message, sender } = messageData;
+        socket.join(`message_${mid}`);
+        const newMessage = new MessageModal({ mid, message, sender });
+        await newMessage.save();
+        const messageDetails = await MessageModal.find({ mid });
+        io.to(`message_${mid}`).emit('messagedetails', messageDetails);
+    });
+
+    socket.on('deleteMessage', async (id) => {
+        const {mid} = id;
+        socket.join(`message_${mid}`);
+        const deletemess = await MessageModal.deleteMany({ mid })
+        const messageDetails = await MessageModal.find({ mid });
+        io.to(`message_${mid}`).emit('messagedetails', messageDetails);
+    });
+    
+    socket.on('leavemessageRoom', (mid) => {
+        socket.leave(`message_${mid}`);
+    });
+
+
 });
 
 app.get('/', (req,res)=>{
