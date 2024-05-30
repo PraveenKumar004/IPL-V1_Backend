@@ -92,6 +92,18 @@ router.post('/deletmanager/:id', async (req, res) => {
     }
 });
 
+router.post('/deletmessage/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log(id);
+        await MessageModels.deleteMany({ mid: id });
+        res.json("done");
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 router.post('/changepasswordmanager/:id', async (req, res) => {
     try {
         const {id} = req.params;

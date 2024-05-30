@@ -100,7 +100,7 @@ io.on('connection', (socket) => {
             console.error('Error fetching message details:', error);
         }
     });
-    
+
     socket.on('newMessage', async (messageData) => {
         const { mid, message, sender } = messageData;
         socket.join(`message_${mid}`);
@@ -110,22 +110,16 @@ io.on('connection', (socket) => {
         io.to(`message_${mid}`).emit('messagedetails', messageDetails);
     });
 
-    socket.on('deleteMessage', async (id) => {
-        const {mid} = id;
-        socket.join(`message_${mid}`);
-        const deletemess = await MessageModal.deleteMany({ mid })
-        const messageDetails = await MessageModal.find({ mid });
-        io.to(`message_${mid}`).emit('messagedetails', messageDetails);
-    });
-    
     socket.on('leavemessageRoom', (mid) => {
         socket.leave(`message_${mid}`);
     });
 
 
 });
-
-app.get('/', (req,res)=>{
+app.get('/home', (req, res) => {
+    res.json("active");
+})
+app.get('/', (req, res) => {
     res.send("say Hello");
 })
 
