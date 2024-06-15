@@ -6,16 +6,18 @@ const AuctionModel = require('../models/auction');
 const SoldModel = require('../models/soldplayer');
 const UnsoldModel = require('../models/unsoldplayer');
 const MessageModels = require('../models/message');
+const PlayingModel = require('../models/playing11');
+const WinnerModel = require('../models/winner')
 
 router.post('/createmanager', async (req, res) => {
     try {
-        const { id, amount, password } = req.body;
+        const { id, amount, password, limit } = req.body;
         const find = await ManagerModel.findOne({ id });
         if (find) {
             console.log("Already Exist");
             res.json("exist");
         } else {
-            const manager = await ManagerModel.create({ id, amount, password });
+            const manager = await ManagerModel.create({ id, amount, password, limit });
             res.json(manager._id);
         }
     } catch (err) {
@@ -85,6 +87,8 @@ router.post('/deletmanager/:id', async (req, res) => {
         await ContestModel.deleteMany({ mid: id });
         await AuctionModel.deleteMany({ mid: id });
         await MessageModels.deleteMany({ mid: id });
+        await WinnerModel.deleteMany({mid:id});
+        await PlayingModel.deleteMany({mid:id});
         res.json("done");
     } catch (err) {
         console.log(err);

@@ -11,6 +11,8 @@ const Auction = require("./routes/auction");
 const AuctionModal = require("./models/auction");
 const ContestantModal = require("./models/contestant");
 const MessageModal = require("./models/message");
+const PlayingTeam = require("./routes/playing11");
+const Winner = require('./routes/winner')
 
 const app = express();
 app.use(cors());
@@ -25,16 +27,18 @@ app.use(Manager);
 app.use(Contestant);
 app.use(Player);
 app.use(Auction);
+app.use(PlayingTeam);
+app.use(Winner);
 
 io.on('connection', (socket) => {
     console.log("connected");
 
     socket.on('joinPlayerRoom', async (id) => {
-        socket.join(`player_${id}`);
+        socket.join(`players${id}`);
         try {
             const playerData = await ContestantModal.findOne({ _id: id });
             if (playerData) {
-                io.to(`player_${id}`).emit('data', playerData);
+                io.to(`players${id}`).emit('data', playerData);
             } else {
                 console.log('Player not found for _id:', id);
             }
@@ -44,7 +48,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('leavePlayerRoom', (id) => {
-        socket.leave(`player_${id}`);
+        socket.leave(`players${id}`);
     });
 
     socket.on('joinAuctionRoom', async (mid) => {
@@ -70,7 +74,7 @@ io.on('connection', (socket) => {
             const auction = await AuctionModal.findOne({ mid });
             const newPrice = auction.price + bid;
             const Nameget = await ContestantModal.findOne({ _id: pid });
-            await AuctionModal.findOneAndUpdate({ mid }, { price: newPrice, pid, teamName: Nameget.teamName });
+            await AuctionModal.findOneAndUpdate({ mid }, { price: newPrice, pid, teamName: Nameget.teamName, teamAbbrevation: Nameget.teamAbbreviation });
             const updatedAuction = await AuctionModal.findOne({ mid });
             io.to(`auction_${mid}`).emit('bidUpdate', updatedAuction);
         } catch (error) {
@@ -116,6 +120,7 @@ io.on('connection', (socket) => {
 
 
 });
+
 app.get('/home', (req, res) => {
     res.json("active");
 })

@@ -3,18 +3,20 @@ const router = express.Router();
 const ContestantModel = require('../models/contestant');
 const ManagerModel = require('../models/manager');
 const SoldPlayer = require('../models/soldplayer');
+const PlayingModel = require('../models/playing11');
 
 router.post('/createteam/:id', async (req, res) => {
     try {
         const{id}=req.params;
         const {teamName, teamAbbreviation, password } = req.body;
         const amountFind = await ManagerModel.findOne({ _id:id });
-        if (amountFind === "a") {
-            console.log("Already Exist");
-            res.json("exist")
+        const getteam = await ContestantModel.find({mid:id});
+        if (getteam.length+1 > amountFind.limit) {
+            console.log("Limit Exceeded");
+            res.json("exist");
         }
         else {
-            const cr = await ContestantModel.create({ mid:id, teamName, teamAbbreviation, password, amount:amountFind.amount, points:0 })
+            const cr = await ContestantModel.create({ mid:id, teamName, teamAbbreviation, password, amount:amountFind.amount, points:0, noplayers:0 })
             res.json(cr._id);
         }
     }
@@ -73,7 +75,7 @@ router.post('/deletcontest/:id', async (req, res) => {
         const { id } = req.params;
         await ContestantModel.findOneAndDelete({ _id: id });
         await SoldPlayer.deleteMany({ pid: id });
-
+        await PlayingModel.findOneAndDelete({pid:id});
         res.json("done");
     } catch (err) {
         console.log(err);

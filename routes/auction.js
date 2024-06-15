@@ -22,7 +22,7 @@ router.post('/addauctionplayer/:id', async (req, res) => {
                 res.json("soldorunsold");
             }
             else {
-                const manager = await AuctionModel.create({ mid: id, name, country, countryshort, category, nation, points, baseprice, player: _id, price: 0, pid: "no", teamName: "" });
+                const manager = await AuctionModel.create({ mid: id, name, country, countryshort, category, nation, points, baseprice, player: _id, price: 0, pid: "no", teamName: "", teamAbbrevation: "", bid: 0 });
                 res.json(manager._id);
             }
 
@@ -60,13 +60,14 @@ router.post('/soldplayer/:id', async (req, res) => {
                 country: find.country,
                 countryshort: find.countryshort,
                 category: find.category,
-                nation: find.category,
+                nation: find.nation,
                 points: find.points,
                 baseprice: find.baseprice,
                 player: find.player,
                 price: find.price,
                 pid: find.pid,
-                teamName: find.teamName
+                teamName: find.teamName,
+                teamAbbrevation: find.teamAbbrevation
             });
             await AuctionModel.findOneAndDelete({ mid: id });
             res.json("unsold");
@@ -78,19 +79,21 @@ router.post('/soldplayer/:id', async (req, res) => {
                 country: find.country,
                 countryshort: find.countryshort,
                 category: find.category,
-                nation: find.category,
+                nation: find.nation,
                 points: find.points,
                 baseprice: find.baseprice,
                 player: find.player,
                 price: find.price,
                 pid: find.pid,
-                teamName: find.teamName
+                teamName: find.teamName,
+                teamAbbrevation: find.teamAbbrevation
             });
             const player = await ContestantModel.findOne({ _id: find.pid });
             if (player) {
                 const newpoints = player.points + find.points;
                 const newamount = player.amount - find.price;
-                await ContestantModel.findOneAndUpdate({ _id: find.pid }, { points: newpoints, amount: newamount });
+                const number = player.noplayers + 1;
+                await ContestantModel.findOneAndUpdate({ _id: find.pid }, { points: newpoints, amount: newamount,noplayers:number });
             } else {
                 console.error(`Player with id ${find.pid} not found`);
             }
@@ -119,6 +122,22 @@ router.get('/getsoldplayersbypid/:id', async (req, res) => {
     }
 });
 
+router.get('/soldplayersteam/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const details = await SoldModel.find({ pid: id });
+        if (details) {
+            res.json(details);
+        } else {
+            res.status(404).json({ error: "Player not found" });
+        }
+    } catch (err) {
+        console.log("Error in Get Manager Details: ", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
 router.get('/getunsoldplayersbypid/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -133,6 +152,20 @@ router.get('/getunsoldplayersbypid/:id', async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+router.post('/updatebid/:id/:bid', async (req, res) => {
+    try {
+        console.log("bidupdate")
+        const {bid}= req.params;
+        const {id} = req.params;
+        await AuctionModel.findOneAndUpdate({ mid: id },{bid:bid});
+        res.json("done")
+    }
+    catch (err) {
+        console.log(err);
+    }
+});
+
 
 
 module.exports = router;

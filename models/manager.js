@@ -7,6 +7,9 @@ const manager = mongoose.Schema({
     amount:{
         type:Number
     },
+    limit:{
+        type:Number
+    },
     password:{
         type:String
     }

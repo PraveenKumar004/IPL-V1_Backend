@@ -18,6 +18,9 @@ const contestant = mongoose.Schema({
     },
     points:{
         type:Number
+    },
+    noplayers:{
+        type:Number
     }
 });
 

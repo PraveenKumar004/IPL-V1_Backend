@@ -36,6 +36,9 @@ const play = mongoose.Schema({
     },
     teamName:{
         type:String
+    },
+    teamAbbrevation:{
+        type:String
     }
 });
 
