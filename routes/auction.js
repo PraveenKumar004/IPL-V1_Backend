@@ -94,7 +94,8 @@ router.post('/soldplayer/:id', async (req, res) => {
             const player = await ContestantModel.findOne({ _id: find.pid });
             if (player) {
                 const newpoints = player.points + find.points;
-                const newamount = player.amount - formattedPrice;
+                // const newamount = player.amount - formattedPrice;
+                const newamount = parseFloat((player.amount - formattedPrice).toFixed(2));
                 const number = player.noplayers + 1;
                 await ContestantModel.findOneAndUpdate({ _id: find.pid }, { points: newpoints, amount: newamount,noplayers:number });
             } else {

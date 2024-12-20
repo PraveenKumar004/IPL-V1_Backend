@@ -30,7 +30,7 @@ router.post('/selectingwinner/:id', async (req, res) => {
 router.get('/getwinnerbyid/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const details = await PlayingModel.findOne({ mid: id });
+        const details = await WinnerModel.findOne({ mid: id });
         if (details) {
             res.json(details);
         }
