@@ -3,11 +3,12 @@ const router = express.Router();
 const PlayingModel = require('../models/playing11');
 const WinnerModel = require('../models/winner');
 
-router.post('/selectingwinner/:id', async (req, res) => {
+router.post('/selectingwinner/:id/:pids', async (req, res) => {
     try {
         const { id} = req.params;
+        const { pids} = req.params;
         const check = await WinnerModel.findOne({mid:id})
-        const find = await PlayingModel.findOne({ mid: id });
+        const find = await PlayingModel.findOne({ mid: id ,pid : pids });
         if (check) {
             return res.json("exist");
         } 
