@@ -53,6 +53,9 @@ router.post('/soldplayer/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const find = await AuctionModel.findOne({ mid: id });
+
+        const formattedPrice = parseFloat(find.price.toFixed(2));
+
         if (find.pid === "no") {
             await UnSoldModel.create({
                 mid: id,
@@ -64,7 +67,7 @@ router.post('/soldplayer/:id', async (req, res) => {
                 points: find.points,
                 baseprice: find.baseprice,
                 player: find.player,
-                price: find.price,
+                price: formattedPrice,
                 pid: find.pid,
                 teamName: find.teamName,
                 teamAbbrevation: find.teamAbbrevation
@@ -83,7 +86,7 @@ router.post('/soldplayer/:id', async (req, res) => {
                 points: find.points,
                 baseprice: find.baseprice,
                 player: find.player,
-                price: find.price,
+                price: formattedPrice,
                 pid: find.pid,
                 teamName: find.teamName,
                 teamAbbrevation: find.teamAbbrevation
@@ -91,7 +94,7 @@ router.post('/soldplayer/:id', async (req, res) => {
             const player = await ContestantModel.findOne({ _id: find.pid });
             if (player) {
                 const newpoints = player.points + find.points;
-                const newamount = player.amount - find.price;
+                const newamount = player.amount - formattedPrice;
                 const number = player.noplayers + 1;
                 await ContestantModel.findOneAndUpdate({ _id: find.pid }, { points: newpoints, amount: newamount,noplayers:number });
             } else {
