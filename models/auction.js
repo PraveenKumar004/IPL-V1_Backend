@@ -42,6 +42,9 @@ const play = mongoose.Schema({
     },
     bid:{
         type:Number
+    },
+    image:{
+        type:String
     }
 });
 

@@ -8,7 +8,7 @@ const ContestantModel = require('../models/contestant');
 router.post('/addauctionplayer/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, country, countryshort, category, nation, points, baseprice, _id } = req.body;
+        const { name, image, country, countryshort, category, nation, points, baseprice, _id } = req.body;
         const find = await AuctionModel.findOne({ mid: id });
         const sold = await SoldModel.find({ mid: id });
         const unsoldp = await UnSoldModel.find({ mid: id });
@@ -22,7 +22,7 @@ router.post('/addauctionplayer/:id', async (req, res) => {
                 res.json("soldorunsold");
             }
             else {
-                const manager = await AuctionModel.create({ mid: id, name, country, countryshort, category, nation, points, baseprice, player: _id, price: 0, pid: "no", teamName: "", teamAbbrevation: "", bid: 0 });
+                const manager = await AuctionModel.create({ mid: id, name, image, country, countryshort, category, nation, points, baseprice, player: _id, price: 0, pid: "no", teamName: "", teamAbbrevation: "", bid: 0 });
                 res.json(manager._id);
             }
 
