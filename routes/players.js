@@ -4,13 +4,13 @@ const PlayerModel = require('../models/players');
 
 router.post('/createplayer', async (req, res) => {
     try {
-        const { name, country, countryshort, category, nation, points, baseprice } = req.body;
+        const { name, image,country, countryshort, category, nation, points, baseprice } = req.body;
         const find = await PlayerModel.findOne({ name });
         if (find) {
             console.log("Already Exist");
             res.json("exist");
         } else {
-            const manager = await PlayerModel.create({ name, country, countryshort, category, nation, points, baseprice });
+            const manager = await PlayerModel.create({ name, image,country, countryshort, category, nation, points, baseprice });
             res.json(manager._id);
         }
     } catch (err) {
