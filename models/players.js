@@ -21,6 +21,9 @@ const play = mongoose.Schema({
     },
     baseprice:{
         type:Number
+    },
+    image:{
+        type:String
     }
 });
 
